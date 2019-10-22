@@ -1,5 +1,12 @@
 """Solve a sudoku from a file and print the solved puzzle to the console
 
+Uses the Sherlock Holmes method of deduction: "Once you eliminate the
+impossible, whatever remains, no matter how improbable, must be the truth."
+This script keeps track of all possibilities for each cell on the board and
+by process of elimination, finds what can not be possible. Once a cell only
+has one possible number, the script removes that number from the rest of the
+row, column, and square. 
+
 Input: a file named "sudoku clues.txt"
     example format: 53xx7xxxx
                     6xx195xxx
@@ -44,6 +51,8 @@ for i in range(0,9): # Board has 9 rows
 running = True
 while running:
     running = False
+
+    # Find all instances where a cell on the board is a list of 1 integer
     for i in range(0,9):
         for j in range(0,9):
             # If this element is an int, ignore it
@@ -76,9 +85,69 @@ while running:
                 for k in range(0,3):
                     for l in range(0,3):
                         # Remove int from square if it's still there
-                        if type(board[3*squareRow+k][3*squareCol+l]) == list: # Check that it's a list
-                            if foundInt in board[3*squareRow+k][3*squareCol+l]: # Check that foundInt is in the list
+                        if type(board[3*squareRow+k][3*squareCol+l]) == list: # Check if list
+                            # Check that foundInt is in the list
+                            if foundInt in board[3*squareRow+k][3*squareCol+l]:
                                 board[3*squareRow+k][3*squareCol+l].remove(foundInt)
+
+    # Find all instances where one number only appears once in the
+    # possibilities of a row
+    if not running: # Only run this if needed (because efficiency)
+        for i in range(0,9): # Rows
+            joinedPossibilities = []
+            for j in range(0,9): # Columns
+                if type(board[i][j]) == list:
+                    joinedPossibilities += board[i][j]
+            for k in range(1,10): # integers 1-9
+                # If only one cell contains this integer,
+                # that cell is this integer
+                kCount = joinedPossibilities.count(k)
+                if kCount == 1:
+                    for j in range(0,9): # Columns again
+                        if type(board[i][j]) == list: # Check if list
+                            if k in board[i][j]: # Check if k in list
+                                board[i][j] = [k]
+                                running = True # Flag to keep running
+
+    # Find all instances where one number only appears once in the
+    # possibilities of a column
+    if not running: # Only run this if needed (because efficiency)
+        for i in range(0,9): # Columns
+            joinedPossibilities = []
+            for j in range(0,9): # Rows
+                if type(board[j][i]) == list:
+                    joinedPossibilities += board[j][i]
+            for k in range(1,10): # integers 0-8
+                # If only one cell contains this integer, that cell is this integer
+                kCount = joinedPossibilities.count(k)
+                if kCount == 1:
+                    for j in range(0,9): # Columns again
+                        if type(board[j][i]) == list: # Check if list
+                            if k in board[j][i]: # Check if k in list
+                                board[j][i] = [k]
+                                running = True # Flag to keep running
+
+    # Find all instances where one number only appears once in the
+    # possibilities of a square
+    if not running: # Only run this if needed (because efficiency)
+        for i in range(0,3): # Rows
+            for j in range(0,3): # Columns
+                joinedPossibilities = []
+                for m in range(0,3): # Rows
+                    for n in range(0,3): # Columns
+                        if type(board[3*i+m][3*j+n]) == list:
+                            joinedPossibilities += board[3*i+m][3*j+n]
+                for k in range(1,10): # integers 1-9
+                    # If only one cell contains this integer, that cell is this integer
+                    kCount = joinedPossibilities.count(k)
+                    if kCount == 1:
+                        for m in range(0,3): # Rows again
+                            for n in range(0,3): # Columns again
+                                if type(board[3*i+m][3*j+n]) == list: # Check if list
+                                    if k in board[3*i+m][3*j+n]: # Check if k in list
+                                        board[3*i+m][3*j+n] = [k]
+                                        running = True # Flag to keep running
+                                            # Much nesting. Such loop. Very wow!
 
 # Print solved board
 for row in board:
