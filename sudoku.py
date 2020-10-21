@@ -5,7 +5,7 @@ impossible, whatever remains, no matter how improbable, must be the truth."
 This script keeps track of all possibilities for each cell on the board and
 by process of elimination, finds what can not be possible. Once a cell only
 has one possible number, the script removes that number from the rest of the
-row, column, and square. 
+row, column, and square.
 
 Input: a file named "sudoku clues.txt"
     example format: 53xx7xxxx
